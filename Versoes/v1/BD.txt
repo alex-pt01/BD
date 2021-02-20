@@ -1,0 +1,206 @@
+CREATE SCHEMA Projeto;
+GO
+
+CREATE TABLE Projeto.UNIVERSIDADE(
+Idade	DATE	NOT NULL,
+Nome_Uni VARCHAR(30) NOT NULL,
+Endereco VARCHAR(30) NOT NULL,
+Telefone INT NOT NULL,
+EmailUni VARCHAR(40) NOT NULL,
+PRIMARY KEY(EmailUni)
+);
+
+
+CREATE TABLE Projeto.ALUNO(
+Nome VARCHAR(30) NOT NULL,
+NMEC INT NOT NULL,
+Email VARCHAR(40) NOT NULL,
+RegimeEstudo VARCHAR(30) CHECK (RegimeEstudo='Estudante' OR RegimeEstudo='Erasmus' OR  RegimeEstudo='TrabalhadorEstudante' OR  RegimeEstudo='EstudanteInternacional'), 
+
+EmailUni VARCHAR(40) NOT NULL,
+PRIMARY KEY(NMEC)
+
+);
+
+
+CREATE TABLE Projeto.CURSO(
+Nome_Curso VARCHAR(30) NOT NULL,
+ID_Curso INT NOT NULL,
+PRIMARY KEY(ID_Curso)
+);
+
+CREATE TABLE Projeto.UNIDADECURRICULAR(
+ID_UC INT NOT NULL,
+AnoFormacao DATE NOT NULL,
+PRIMARY KEY(ID_UC)
+);
+
+CREATE TABLE Projeto.AVALIACAO(
+ID_Curso INT NOT NULL,
+notaDecimal DECIMAL(2,2) NOT NULL,
+PRIMARY KEY(ID_Curso)
+);
+
+CREATE TABLE Projeto.HORARIO(
+ID_Horario INT NOT NULL,
+PRIMARY KEY(ID_Horario)
+);
+
+CREATE TABLE Projeto.TURMA(
+ID_Turma INT NOT NULL,
+AnoLectico DATE NOT NULL,
+PRIMARY KEY(ID_Turma)
+);
+
+CREATE TABLE Projeto.PROFESSOR(
+Nome_Prof VARCHAR(30) NOT NULL,
+Num_Gabinete INT NOT NULL,
+Email VARCHAR(40) NOT NULL,
+TMEC INT NOT NULL,
+
+EmailUni VARCHAR(40) NOT NULL,
+PRIMARY KEY(TMEC)
+);
+
+CREATE TABLE Projeto.DEPARTAMENTO(
+Nome_Dep VARCHAR(30) NOT NULL,
+ID_Dep INT NOT NULL,
+Localizacao_Dep VARCHAR(30) NOT NULL,
+
+EmailUni VARCHAR(40) NOT NULL,
+PRIMARY KEY(ID_Dep)
+);
+
+CREATE TABLE Projeto.SALA(
+ID_Sala INT NOT NULL,
+Limite_Alunos INT NOT NULL,
+PRIMARY KEY(ID_Sala)
+);
+
+/*CREATE TABLE Projeto.TipoDeSALA( */
+
+CREATE TABLE Projeto.REGISTO(
+ID_Registo INT NOT NULL,
+PRIMARY KEY(ID_Registo)
+);
+
+CREATE TABLE Projeto.NOTA(
+classificacao DECIMAL(2,2) NOT NULL,
+ID_Registo INT NOT NULL,
+PRIMARY KEY(ID_Registo)
+);
+
+CREATE TABLE Projeto.FALTA(
+Tipo_Falta VARCHAR(20) NOT NULL,
+ID_Registo INT NOT NULL,
+PRIMARY KEY(ID_Registo)
+);
+
+/*---------------------------------*/
+
+CREATE TABLE Projeto.TUTOR(
+ID_Tutor INT NOT NULL,
+PRIMARY KEY(ID_Tutor)
+);
+
+CREATE TABLE Projeto.NUCLEO(
+Nome_Nucleo VARCHAR(30) NOT NULL,
+Lot_Max_Curso INT NOT NULL,
+Clubes VARCHAR(30) NOT NULL,
+ID_Nucleo INT NOT NULL
+PRIMARY KEY(ID_Nucleo)
+);
+
+CREATE TABLE Projeto.SECRETARIA(
+ID_Secretaria INT NOT NULL,
+Localizacao_Secr VARCHAR(30) NOT NULL,
+Lot_Max_Secr INT NOT NULL,
+Pagamento_proprinas INT NOT NULL,
+
+EmailUni VARCHAR(40) NOT NULL,
+PRIMARY KEY(ID_Secretaria)
+);
+
+CREATE TABLE Projeto.REFEITORIO(
+Nome_Refeitorio VARCHAR(30) NOT NULL,
+ID_Refeitorio INT NOT NULL,
+Lot_Max_Ref INT NOT NULL,
+Nome_Menu VARCHAR(30) NOT NULL,
+Senha_Refeicao INT NOT NULL,
+
+EmailUni VARCHAR(40) NOT NULL,
+PRIMARY KEY(ID_Refeitorio)
+);
+
+CREATE TABLE Projeto.BIBLIOTECA(
+ID_Biblioteca INT NOT NULL,
+Lot_Max_Biblio INT NOT NULL, 
+
+EmailUni VARCHAR(40) NOT NULL,                     
+PRIMARY KEY(ID_Biblioteca)
+);
+
+CREATE TABLE Projeto.BOLSA_ESTUDO_ALUNO(
+ID_BolsaEstudo INT NOT NULL,
+PRIMARY KEY(ID_BolsaEstudo)
+);
+
+
+
+
+
+ALTER TABLE Projeto.REFEITORIO ADD CONSTRAINT EmailUni FOREIGN KEY (EmailUni) REFERENCES Projeto.UNIVERSIDADE (EmailUni);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,130 @@
+
+
+
+--ENTIDADE Horario
+--------------------------------------------------------------------------------------------------------------------------------------------
+CREATE FUNCTION SAA.DADOS_HOR_X (@id_hor int) RETURNS TABLE
+AS
+	RETURN(
+	select H.ID_Horario,Nome,NMEC,AL.Email,PP.TMEC,Nome_Prof
+	from SAA.ALUNO AS AL
+	JOIN SAA.HORARIO AS H ON AL.ID_Horario =H.ID_Horario
+	JOIN SAA.UC AS UC ON H.ID_Horario=UC.ID_Horario
+	JOIN SAA.Relacao_UC_PROFESSOR AS RUP ON RUP.ID_UC=UC.ID_UC
+	JOIN SAA.PROFESSOR AS PP ON PP.TMEC=RUP.TMEC
+	WHERE H.ID_Horario=@id_hor
+	)
+
+--UDF Horario Aluno PorTurma X
+CREATE FUNCTION SAA.Horario_Aluno_PorTurmaX (@turma INT) RETURNS TABLE
+AS
+	RETURN (
+	    SELECT A.NMEC, A.Nome, T.ID_Turma
+		FROM SAA.ALUNO AS A JOIN SAA.HORARIO AS H ON A.ID_Horario=H.ID_Horario
+		JOIN SAA.TURMA AS T ON H.ID_Horario=T.ID_Horario
+		WHERE ID_TURMA=@turma
+	)
+go
+select * from SAA.Horario_Aluno_PorTurmaX(2)
+go
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--UDF ALUNO EM ERASMOS
+CREATE FUNCTION SAA.ALUNO_EM_ERASMOS (@Erasmus varchar(50)) RETURNS TABLE
+AS 
+	RETURN(
+		SELECT ALUNO.NMEC, ALUNO.Nome, ALUNO.RegimeEstudo,ID_Biblioteca, ALUNO.Email
+		FROM SAA.ALUNO
+		WHERE RegimeEstudo=@Erasmus
+		)
+go
+
+SELECT * FROM SAA.ALUNO_EM_ERASMOS('Erasmus')
+go
+
+--Stored Procedure do numero de alunos em erasmos que frequentam a biblioteca
+CREATE PROCEDURE SAA.TOTAL_ALUNOS_ERASMOS_BIBLOTECA
+AS
+	SELECT COUNT(A.ID_Biblioteca)
+		FROM SAA.ALUNO AS A
+		WHERE RegimeEstudo='Erasmus'
+go
+EXEC SAA.TOTAL_ALUNOS_ERASMOS_BIBLOTECA
+go
+
+-- UDF Alunos da turma X
+CREATE FUNCTION SAA.ALUNOS_TURMA_X (@Turma INT) RETURNS TABLE
+AS
+	RETURN(
+		SELECT A.NMEC, A.Nome, A.Email, T.ID_Turma
+		FROM SAA.ALUNO AS A JOIN SAA.Relacao_ALUNO_TURMA AS RAT ON A.NMEC=RAT.NMEC
+		JOIN SAA.TURMA AS T ON RAT.ID_Turma=T.ID_Turma
+		WHERE T.ID_Turma=@Turma
+	)
+go
+SELECT * FROM SAA.ALUNOS_TURMA_X(1)
+go 
+
+
+
+
+
+--Total_Alunos_Por_Curso
+CREATE PROCEDURE SAA.Total_Alunos_Por_Curso
+AS
+	SELECT Nome_Curso, COUNT(NMEC) as Numero_Alunos
+	FROM SAA.ALUNO JOIN SAA.CURSO ON SAA.ALUNO.ID_Curso = SAA.CURSO.ID_Curso
+	GROUP BY Nome_Curso
+go
+EXEC SAA.Total_Alunos_Por_Curso
+
+
+select * from SAA.
+
+

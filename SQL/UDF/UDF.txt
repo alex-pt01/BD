@@ -1,0 +1,129 @@
+USE SAA
+go
+--UDF ALUNO EM ERASMOS
+CREATE FUNCTION SAA.ALUNO_EM_ERASMOS (@Erasmus varchar(50)) RETURNS TABLE
+AS 
+	RETURN(
+		SELECT ALUNO.NMEC, ALUNO.Nome, ALUNO.RegimeEstudo,ID_Biblioteca, ALUNO.Email
+		FROM SAA.ALUNO
+		WHERE RegimeEstudo=@Erasmus
+		)
+go
+
+SELECT * FROM SAA.ALUNO_EM_ERASMOS('Erasmus')
+go
+
+--Stored Procedure do numero de alunos em erasmos que frequentam a biblioteca
+CREATE PROCEDURE SAA.TOTAL_ALUNOS_ERASMOS_BIBLOTECA
+AS
+	SELECT COUNT(A.ID_Biblioteca)
+		FROM SAA.ALUNO AS A
+		WHERE RegimeEstudo='Erasmus'
+go
+EXEC SAA.TOTAL_ALUNOS_ERASMOS_BIBLOTECA
+go
+
+-- UDF Alunos da turma X
+CREATE FUNCTION SAA.ALUNOS_TURMA_X (@Turma INT) RETURNS TABLE
+AS
+	RETURN(
+		SELECT A.NMEC, A.Nome, A.Email, T.ID_Turma
+		FROM SAA.ALUNO AS A JOIN SAA.Relacao_ALUNO_TURMA AS RAT ON A.NMEC=RAT.NMEC
+		JOIN SAA.TURMA AS T ON RAT.ID_Turma=T.ID_Turma
+		WHERE T.ID_Turma=@Turma
+	)
+go
+SELECT * FROM SAA.ALUNOS_TURMA_X(1)
+go 
+
+--Stored Procedure de turmas e salas
+CREATE PROCEDURE SAA.TURMAS_E_SALAS 
+AS
+	SELECT AT1.NMEC, AT1.Nome,AT1.Email, AT1.ID_Turma
+	FROM ALUNOS_TURMA_1 AS AT1 JOIN SAA.Relacao_Turma_Sala AS RTS ON AT1.ID_Turma=RTS.ID_Turma
+	JOIN SAA.SALA AS S ON RTS.ID_Sala=S.ID_Sala
+go
+EXEC SAA.TURMAS_E_SALAS 
+go
+
+--UDF turmas por professor X
+CREATE FUNCTION SAA.TURMAS_POR_PROFESSOR (@ProfName varchar(30)) RETURNS TABLE
+AS
+	RETURN (
+		SELECT T.ID_Turma,P.TMEC,  P.Nome_Prof, P.Email
+		FROM SAA.PROFESSOR AS P JOIN SAA.TURMA AS T ON P.TMEC=T.TNEMC
+		WHERE P.Nome_Prof=@ProfName
+	)
+go
+select * from SAA.TURMAS_POR_PROFESSOR('Carlos')
+go 
+
+--UDF total de professores do departamento Y
+CREATE FUNCTION SAA.TOTAL_PROFESSORES_DEP_X (@Dep INT) RETURNS TABLE
+AS
+	RETURN (
+	    SELECT COUNT(D.ID_Dep) AS TOTAL_PROF_DEP
+		FROM SAA.PROFESSOR AS P JOIN SAA.DEPARTAMENTO AS D ON P.ID_DEP=D.ID_Dep
+		WHERE D.ID_Dep=@Dep
+	)
+go
+select * from SAA.TOTAL_PROFESSORES_DEP_X(2)
+go
+
+--UDF Horario Aluno PorTurma X
+CREATE FUNCTION SAA.Horario_Aluno_PorTurmaX (@turma INT) RETURNS TABLE
+AS
+	RETURN (
+	    SELECT A.NMEC, A.Nome, T.ID_Turma
+		FROM SAA.ALUNO AS A JOIN SAA.HORARIO AS H ON A.ID_Horario=H.ID_Horario
+		JOIN SAA.TURMA AS T ON H.ID_Horario=T.ID_Horario
+		WHERE ID_TURMA=@turma
+	)
+go
+select * from SAA.Horario_Aluno_PorTurmaX(2)
+go
+
+
+--Stored Procedure  de que departamento sao os professores
+CREATE PROC SAA.PROFESSOR_DEPARTAMENO  
+AS
+	SELECT Nome_Prof, TMEC, Nome_Dep
+	FROM SAA.DEPARTAMENTO JOIN SAA.PROFESSOR ON SAA.DEPARTAMENTO.ID_Dep = SAA.PROFESSOR.ID_DEP
+
+go
+EXEC SAA.PROFESSOR_DEPARTAMENO
+go
+
+--UDF Numero de faltas injustificadas dos alunos a cada uc
+CREATE FUNCTION SAA.tipo_faltas_alunos_cada_uc (@Tipo_Falta varchar(30)) RETURNS TABLE
+AS
+	RETURN (
+			SELECT Nome, ID_UC, Tipo_Falta, COUNT(ID_UC) AS NUM_FALTAS
+			FROM (SAA.REGISTO JOIN SAA.FALTA ON SAA.REGISTO.ID_Registo = SAA.FALTA.ID_Registo) JOIN SAA.ALUNO ON SAA.ALUNO.NMEC = SAA.REGISTO.NMEC
+			WHERE Tipo_Falta = @Tipo_Falta
+			GROUP BY Nome, ID_UC, Tipo_Falta
+	)
+go
+
+select * from SAA.tipo_faltas_alunos_cada_uc('Injustificada')
+
+--UDF uc's de cada curso
+CREATE PROCEDURE SAA.UCS_POR_CURSO
+AS
+	SELECT Nome_Curso, ID_UC
+	FROM SAA.Relacao_UC_CURSO JOIN SAA.CURSO ON SAA.Relacao_UC_CURSO.ID_Curso = SAA.CURSO.ID_Curso
+	ORDER BY Nome_Curso OFFSET 0 ROWS;
+go
+EXEC SAA.UCS_POR_CURSO
+go
+
+--
+CREATE PROCEDURE SAA.Total_Alunos_Por_Curso
+AS
+	SELECT Nome_Curso, COUNT(NMEC) as Numero_Alunos
+	FROM SAA.ALUNO JOIN SAA.CURSO ON SAA.ALUNO.ID_Curso = SAA.CURSO.ID_Curso
+	GROUP BY Nome_Curso
+go
+EXEC SAA.Total_Alunos_Por_Curso
+
+
